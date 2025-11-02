@@ -22,12 +22,62 @@ class DatabaseOperations:
         self.session = session
 
     # Watch Directory Operations
-    def get_active_watch_directories(self) -> List[WatchDirectory]:
-        """Get all active watch directories."""
-        return self.session.query(WatchDirectory).filter_by(is_active=True).all()
+    def get_active_watch_directories(self, validate_exists: bool = False) -> List[WatchDirectory]:
+        """
+        Get all active watch directories.
 
-    def create_watch_directory(self, user_id: str, directory_path: str) -> WatchDirectory:
-        """Create a new watch directory for a user."""
+        Args:
+            validate_exists: If True, filter out directories that don't exist on filesystem
+
+        Returns:
+            List of active WatchDirectory objects
+        """
+        watch_dirs = self.session.query(WatchDirectory).filter_by(is_active=True).all()
+
+        if validate_exists:
+            import os
+            watch_dirs = [wd for wd in watch_dirs if os.path.isdir(wd.directory_path)]
+
+        return watch_dirs
+
+    def get_watch_directory_by_user(self, user_id: str) -> List[WatchDirectory]:
+        """Get all watch directories for a specific user."""
+        return self.session.query(WatchDirectory).filter_by(user_id=user_id).all()
+
+    def create_watch_directory(self, user_id: str, directory_path: str,
+                              validate_exists: bool = True) -> WatchDirectory:
+        """
+        Create a new watch directory for a user.
+
+        Args:
+            user_id: User identifier
+            directory_path: Absolute path to directory
+            validate_exists: If True, verify directory exists before creating DB entry
+
+        Returns:
+            WatchDirectory object
+
+        Raises:
+            FileNotFoundError: If validate_exists=True and directory doesn't exist
+            ValueError: If directory already registered in database
+        """
+        import os
+
+        # Validate directory exists if requested
+        if validate_exists and not os.path.isdir(directory_path):
+            raise FileNotFoundError(f"Directory does not exist: {directory_path}")
+
+        # Check for duplicate
+        existing = self.session.query(WatchDirectory).filter_by(
+            user_id=user_id,
+            directory_path=directory_path
+        ).first()
+
+        if existing:
+            raise ValueError(
+                f"Watch directory already exists for user '{user_id}': {directory_path}"
+            )
+
         watch_dir = WatchDirectory(user_id=user_id, directory_path=directory_path)
         self.session.add(watch_dir)
         self.session.commit()

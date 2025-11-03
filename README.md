@@ -203,6 +203,76 @@ Edit `.env` to customize:
 
 ## Database Schema
 
+### Entity Relationship Diagram
+
+```
+┌─────────────────────────┐
+│   watch_directories     │
+├─────────────────────────┤
+│ id (PK)                 │
+│ user_id                 │
+│ directory_path          │
+│ is_active               │
+│ created_at              │
+└─────────────────────────┘
+           │
+           │ 1      N
+           ▼
+┌─────────────────────────┐           1      N   ┌────────────────────────┐
+│        videos           │─────────────────────▶│       transcript       │
+├─────────────────────────┤                       ├────────────────────────┤
+│ id (PK)                 │                       │ id (PK)                │
+│ file_path               │                       │ video_id (FK)          │
+│ title                   │                       │ start_time (sec)       │
+│ source_type             │                       │ end_time (sec)         │
+│ status                  │                       │ text                   │
+│ created_at              │                       └────────────────────────┘
+│ user_id                 │
+│ watch_directory_id (FK) │
+└─────────────────────────┘
+           │
+           │ 1      N
+           ▼
+┌─────────────────────────┐
+│       segments          │
+├─────────────────────────┤
+│ id (PK)                 │
+│ video_id (FK)           │
+│ start_time (sec)        │
+│ end_time (sec)          │
+│ source                  │  ← 'asr', 'local_vlm', 'cloud_vlm'
+└─────────────────────────┘
+           │
+           │ 1      1
+           ▼
+┌──────────────────────────┐
+│     segment_scores       │
+├──────────────────────────┤
+│ segment_id (PK, FK)      │
+│ text_score               │
+│ vision_score             │
+│ audio_emphasis_score     │
+│ facial_emphasis_score    │
+│ cloud_score              │
+│ combined_score           │
+│ escalated_to_cloud       │
+└──────────────────────────┘
+
+           │
+           │ videos 1:N
+           ▼
+┌────────────────────────┐
+│    processing_log      │
+├────────────────────────┤
+│ id (PK)                │
+│ video_id (FK)          │
+│ step                   │ ← 'ingest', 'transcribe', 'segment', 'score', 'render'
+│ status                 │ ← 'ok', 'fail'
+│ message                │
+│ created_at             │
+└────────────────────────┘
+```
+
 ### Core Tables
 
 **watch_directories** - User directory monitoring

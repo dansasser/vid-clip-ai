@@ -35,7 +35,7 @@ class Settings:
 
     # Ollama VLM models (used with 'ollama run <model>' command)
     LOCAL_VLM_MODEL: str = os.getenv('LOCAL_VLM_MODEL', 'qwen2.5vl:3b')
-    CLOUD_VLM_MODEL: str = os.getenv('CLOUD_VLM_MODEL', 'qwen2-vl:235b-cloud')
+    CLOUD_VLM_MODEL: str = os.getenv('CLOUD_VLM_MODEL', 'qwen3-vl:235b-cloud')
 
     # Ollama options
     OLLAMA_TIMEOUT: int = int(os.getenv('OLLAMA_TIMEOUT', '300'))  # seconds

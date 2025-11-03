@@ -30,7 +30,7 @@ class Settings:
     WHISPER_MODEL: str = os.getenv('WHISPER_MODEL', 'base')
     WHISPER_DEVICE: str = os.getenv('WHISPER_DEVICE', 'cuda')
 
-    GEMMA_MODEL: str = os.getenv('GEMMA_MODEL', 'gemma-7b')
+    GEMMA_MODEL: str = os.getenv('GEMMA_MODEL', 'gemma3:3b')
     GEMMA_DEVICE: str = os.getenv('GEMMA_DEVICE', 'cuda')
 
     # Ollama VLM models (used with 'ollama run <model>' command)

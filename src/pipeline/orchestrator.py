@@ -145,8 +145,20 @@ class PipelineOrchestrator:
 
     def _run_vision_scoring(self, context: PipelineContext) -> bool:
         """Execute vision scoring stage."""
-        # Implementation placeholder
-        pass
+        self.logger.info(f"Running vision scoring for video_id={context.video_id}")
+
+        result = self.agents['vision_scoring'].execute(context.to_dict())
+
+        if result.get('success'):
+            # Agent already updated scores in DB, updated state, and logged
+            self.logger.info(
+                f"Vision scoring successful: {result['segments_scored']} segments scored"
+            )
+            return True
+        else:
+            # Agent already logged failure
+            self.logger.error(f"Vision scoring failed: {result.get('error')}")
+            return False
 
     def _run_micro_emphasis(self, context: PipelineContext) -> bool:
         """Execute micro-emphasis analysis stage."""

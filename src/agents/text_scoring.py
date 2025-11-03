@@ -35,7 +35,7 @@ class TextScoringAgent(BaseAgent):
 
     def __init__(self, config: Dict[str, Any] = None):
         super().__init__(config)
-        self.model_name = config.get('gemma_model', 'google/gemma-2-3b-it')
+        self.model_name = config.get('gemma_model', 'google/gemma-2-2b-it')
         self.device = config.get('device', 'cuda')
 
         self.logger.info(f"Loading Gemma model: {self.model_name}")

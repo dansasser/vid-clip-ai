@@ -33,11 +33,12 @@ class Settings:
     GEMMA_MODEL: str = os.getenv('GEMMA_MODEL', 'gemma-7b')
     GEMMA_DEVICE: str = os.getenv('GEMMA_DEVICE', 'cuda')
 
-    QWEN2_MODEL: str = os.getenv('QWEN2_MODEL', 'qwen2-vl')
-    OLLAMA_LOCAL_ENDPOINT: str = os.getenv('OLLAMA_LOCAL_ENDPOINT', 'http://localhost:11434')
+    # Ollama models (used with 'ollama run <model>' command)
+    QWEN2_VL_MODEL: str = os.getenv('QWEN2_VL_MODEL', 'qwen2-vl')
+    QWEN3_VL_MODEL: str = os.getenv('QWEN3_VL_MODEL', 'qwen3-vl')
 
-    QWEN3_MODEL: str = os.getenv('QWEN3_MODEL', 'qwen3-vl')
-    OLLAMA_CLOUD_ENDPOINT: str = os.getenv('OLLAMA_CLOUD_ENDPOINT', '')
+    # Ollama options
+    OLLAMA_TIMEOUT: int = int(os.getenv('OLLAMA_TIMEOUT', '300'))  # seconds
 
     # Scoring
     CONFIDENCE_THRESHOLD_LOW: float = float(os.getenv('CONFIDENCE_THRESHOLD_LOW', '0.40'))
@@ -90,8 +91,8 @@ class Settings:
                 'device': cls.GEMMA_DEVICE
             },
             'vision_scoring': {
-                'qwen2_model': cls.QWEN2_MODEL,
-                'ollama_endpoint': cls.OLLAMA_LOCAL_ENDPOINT,
+                'qwen2_vl_model': cls.QWEN2_VL_MODEL,
+                'ollama_timeout': cls.OLLAMA_TIMEOUT,
                 'frames_per_segment': 5
             },
             'micro_emphasis': {
@@ -99,8 +100,8 @@ class Settings:
                 'threshold_high': cls.CONFIDENCE_THRESHOLD_HIGH
             },
             'quality_assurance': {
-                'qwen3_model': cls.QWEN3_MODEL,
-                'cloud_endpoint': cls.OLLAMA_CLOUD_ENDPOINT,
+                'qwen3_vl_model': cls.QWEN3_VL_MODEL,
+                'ollama_timeout': cls.OLLAMA_TIMEOUT,
                 'preview_duration': 2,
                 'preview_resolution': '320p'
             },

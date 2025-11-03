@@ -115,21 +115,15 @@ class PipelineOrchestrator:
         result = self.agents['transcription'].execute(context.to_dict())
 
         if result.get('success'):
-            # Store transcript in database
-            self.db_ops.add_transcript_segments(
-                context.video_id,
-                result['transcript_segments']
+            # Agent already saved transcript to DB, updated state, and logged
+            self.logger.info(
+                f"Transcription successful: {result['segment_count']} segments, "
+                f"language={result.get('language', 'unknown')}"
             )
-            self._update_state(context.video_id, VideoState.TRANSCRIBED)
-            self.db_ops.log_step(context.video_id, 'transcribe', 'ok')
             return True
         else:
-            self.db_ops.log_step(
-                context.video_id,
-                'transcribe',
-                'fail',
-                result.get('errors')
-            )
+            # Agent already logged failure
+            self.logger.error(f"Transcription failed: {result.get('error')}")
             return False
 
     def _run_text_scoring(self, context: PipelineContext) -> bool:

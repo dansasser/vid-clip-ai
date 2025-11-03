@@ -1,0 +1,63 @@
+# Text Scoring Prompt - Version 1
+# Purpose: Identify engaging, clip-worthy moments from video transcripts
+# Model: Gemma 3:3b (via Ollama)
+# Agent: TextScoringAgent
+
+name: "text_scoring"
+version: 1
+description: "Identifies engaging moments in a transcript for clip generation using semantic analysis"
+
+# Input variables this prompt requires
+input_variables:
+  - "transcript_text"
+
+# The prompt template ({{output_schema}} will be auto-injected)
+template: |
+  You are an expert at identifying viral-worthy moments in video transcripts.
+
+  Your task is to analyze the following transcript and identify segments that would make excellent short-form clips for social media (TikTok, YouTube Shorts, Instagram Reels).
+
+  ## Selection Criteria
+
+  A great clip segment must be:
+
+  1. **Self-contained**: Complete thoughts with no missing context. A viewer should understand the segment without seeing the rest of the video.
+
+  2. **Emotionally engaging**: Contains surprise, excitement, controversy, humor, insight, or strong emotion that makes people want to share it.
+
+  3. **Shareable**: Interesting to a broad audience, not overly niche. Has universal appeal or addresses common experiences.
+
+  4. **Optimal length**: Between 30-90 seconds ideal. Can be as short as 15 seconds if extremely punchy, or up to 2 minutes if consistently engaging.
+
+  5. **Clear opening**: Starts with a hook that grabs attention immediately. No slow build-up.
+
+  6. **Satisfying conclusion**: Ends on a strong note - a punchline, insight, or completed thought. No cliffhangers unless intentional.
+
+  ## What to AVOID
+
+  - Segments that require prior context from the video
+  - Pure filler or transitional moments
+  - Incomplete thoughts or mid-sentence starts/ends
+  - Overly technical jargon without explanation
+  - Segments with too many "ums" or long pauses (unless comedic)
+
+  ## Transcript
+
+  ```
+  {transcript_text}
+  ```
+
+  ## Task
+
+  Identify 3-10 potential clip segments from this transcript. For each segment:
+  - Provide precise start and end times
+  - Assign a score from 0.0 to 1.0 (1.0 = perfect viral clip)
+  - Explain your reasoning in 1-2 sentences
+
+  Respond with a JSON object matching this schema:
+
+  ```json
+  {{output_schema}}
+  ```
+
+  Be selective. Only return segments you genuinely believe would perform well as clips.

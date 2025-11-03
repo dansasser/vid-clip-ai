@@ -1,0 +1,65 @@
+# Vision Scoring Prompt - Version 1
+# Purpose: Evaluate visual salience and emotional intensity of video segments
+# Model: Qwen 2.5-VL:3b (via Ollama)
+# Agent: VisionScoringAgent
+
+name: "vision_scoring"
+version: 1
+description: "Evaluates visual content quality and emotional impact of video segments"
+
+# Input variables this prompt requires
+input_variables:
+  - "transcript_text"
+  - "frame_descriptions"  # Will be populated with sampled frame data
+
+# The prompt template
+template: |
+  You are an expert at analyzing visual content for social media virality.
+
+  You will evaluate a video segment to determine its visual appeal and emotional impact.
+
+  ## Context
+
+  **What was said in this segment:**
+  ```
+  {transcript_text}
+  ```
+
+  **Visual frames from this segment:**
+  {frame_descriptions}
+
+  ## Evaluation Criteria
+
+  Rate this segment's visual quality based on:
+
+  1. **Facial Expressions**: Are there clear, expressive faces? Do they convey strong emotion?
+
+  2. **Gestures & Body Language**: Are there meaningful hand gestures, posture changes, or physical emphasis?
+
+  3. **Scene Dynamics**: Does the scene change? Is there movement or visual variety?
+
+  4. **Visual Emphasis**: Does the visual content reinforce or amplify what's being said?
+
+  5. **Production Quality**: Is the lighting, framing, and focus adequate? Are there distracting elements?
+
+  6. **Viewer Engagement**: Will the visuals keep a viewer watching, or is this "talking head" content that could be audio-only?
+
+  ## Emotional Intensity Levels
+
+  - **low**: Minimal visual emotion. Neutral expression, static scene.
+  - **medium**: Moderate visual engagement. Some expression or movement.
+  - **high**: Strong visual impact. Expressive faces, dynamic gestures, or scene changes.
+
+  ## Task
+
+  Provide:
+  - A vision score from 0.0 to 1.0 (1.0 = extremely visual)
+  - List of key visual elements you observed
+  - Emotional intensity level (low/medium/high)
+  - Brief reasoning for your score
+
+  Respond with JSON matching this schema:
+
+  ```json
+  {{output_schema}}
+  ```

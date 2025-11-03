@@ -14,12 +14,13 @@ Key responsibilities:
 Notes:
 - Fast and cheap - runs first in the pipeline
 - Produces many potential clips for further evaluation
+- Uses Hugging Face Transformers (not Ollama)
 """
 
-import subprocess
-import json
 import time
 from typing import Dict, Any, List
+from transformers import AutoTokenizer, AutoModelForCausalLM
+import torch
 from .base_agent import BaseAgent
 from ..database.operations import DatabaseOperations
 from ..database.models import Segment, SegmentScore
@@ -34,13 +35,24 @@ class TextScoringAgent(BaseAgent):
 
     def __init__(self, config: Dict[str, Any] = None):
         super().__init__(config)
-        self.model_name = config.get('gemma_model', 'gemma3:3b')
+        self.model_name = config.get('gemma_model', 'google/gemma-2-3b-it')
         self.device = config.get('device', 'cuda')
-        self.ollama_timeout = config.get('ollama_timeout', 300)
 
-    def _run_ollama(self, prompt: str) -> str:
+        self.logger.info(f"Loading Gemma model: {self.model_name}")
+
+        # Load tokenizer and model
+        self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
+        self.model = AutoModelForCausalLM.from_pretrained(
+            self.model_name,
+            torch_dtype=torch.float16,
+            device_map=self.device
+        )
+
+        self.logger.info("Gemma model loaded successfully")
+
+    def _run_gemma(self, prompt: str) -> str:
         """
-        Run Ollama with Gemma model using subprocess.
+        Run Gemma model directly via Hugging Face Transformers.
 
         Args:
             prompt: The formatted prompt text
@@ -48,22 +60,32 @@ class TextScoringAgent(BaseAgent):
         Returns:
             Model output as string
         """
-        cmd = ['ollama', 'run', self.model_name, prompt]
-
         try:
-            result = subprocess.run(
-                cmd,
-                capture_output=True,
-                text=True,
-                timeout=self.ollama_timeout,
-                check=True
-            )
-            return result.stdout.strip()
-        except subprocess.CalledProcessError as e:
-            self.logger.error(f"Ollama command failed: {e.stderr}")
-            raise
-        except subprocess.TimeoutExpired:
-            self.logger.error(f"Ollama command timed out after {self.ollama_timeout}s")
+            # Tokenize input
+            inputs = self.tokenizer(prompt, return_tensors="pt").to(self.device)
+
+            # Generate response
+            with torch.no_grad():
+                outputs = self.model.generate(
+                    **inputs,
+                    max_new_tokens=2048,
+                    temperature=0.7,
+                    do_sample=True,
+                    top_p=0.9,
+                    pad_token_id=self.tokenizer.eos_token_id
+                )
+
+            # Decode output
+            response = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
+
+            # Remove the prompt from the response (model echoes it)
+            if response.startswith(prompt):
+                response = response[len(prompt):].strip()
+
+            return response
+
+        except Exception as e:
+            self.logger.error(f"Gemma inference failed: {e}")
             raise
 
     def _format_transcript(self, transcript_segments: List[Dict[str, Any]]) -> str:
@@ -179,7 +201,7 @@ class TextScoringAgent(BaseAgent):
 
             self.logger.info("Running Gemma model for text scoring...")
             # Run model
-            model_output = self._run_ollama(formatted_prompt)
+            model_output = self._run_gemma(formatted_prompt)
 
             self.logger.debug(f"Model output: {model_output}")
 

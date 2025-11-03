@@ -14,8 +14,8 @@ torch>=2.0.0
 torchaudio>=2.0.0
 
 # ML Models
-transformers>=4.35.0
-accelerate>=0.25.0
+transformers>=4.40.0
+accelerate>=0.20.0
 sentencepiece>=0.1.99
 
 # Computer Vision

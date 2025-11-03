@@ -128,8 +128,20 @@ class PipelineOrchestrator:
 
     def _run_text_scoring(self, context: PipelineContext) -> bool:
         """Execute text scoring and segmentation stage."""
-        # Implementation placeholder
-        pass
+        self.logger.info(f"Running text scoring for video_id={context.video_id}")
+
+        result = self.agents['text_scoring'].execute(context.to_dict())
+
+        if result.get('success'):
+            # Agent already saved segments to DB, updated state, and logged
+            self.logger.info(
+                f"Text scoring successful: {result['segment_count']} clip candidates identified"
+            )
+            return True
+        else:
+            # Agent already logged failure
+            self.logger.error(f"Text scoring failed: {result.get('error')}")
+            return False
 
     def _run_vision_scoring(self, context: PipelineContext) -> bool:
         """Execute vision scoring stage."""

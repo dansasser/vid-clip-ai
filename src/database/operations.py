@@ -130,6 +130,26 @@ class DatabaseOperations:
         """Get transcript for a video."""
         return self.session.query(Transcript).filter_by(video_id=video_id).all()
 
+    def get_transcript_segments(self, video_id: int) -> List[Dict[str, Any]]:
+        """
+        Get transcript segments as dictionaries for processing.
+
+        Args:
+            video_id: Video identifier
+
+        Returns:
+            List of dictionaries with start_time, end_time, text
+        """
+        transcripts = self.get_transcript(video_id)
+        return [
+            {
+                'start_time': t.start_time,
+                'end_time': t.end_time,
+                'text': t.text
+            }
+            for t in transcripts
+        ]
+
     # Segment Operations
     def add_segment(self, video_id: int, start_time: float,
                    end_time: float, source: str) -> Segment:

@@ -207,7 +207,7 @@ class TranscriptionAgent(BaseAgent):
                 )
 
                 # Update video status to 'transcribed'
-                video = db_ops.get_video_by_id(video_id)
+                video = db_ops.get_video(video_id)
                 video.status = 'transcribed'
                 db_ops.session.commit()
 

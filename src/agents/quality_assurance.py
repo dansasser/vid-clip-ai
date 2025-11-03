@@ -30,7 +30,7 @@ class QualityAssuranceAgent(BaseAgent):
 
     def __init__(self, config: Dict[str, Any] = None):
         super().__init__(config)
-        self.model_name = config.get('qwen3_vl_model', 'qwen3-vl')
+        self.model_name = config.get('vlm_model', 'qwen3-vl:235b-cloud')
         self.ollama_timeout = config.get('ollama_timeout', 300)
         self.preview_duration = config.get('preview_duration', 2)  # seconds
         self.preview_resolution = config.get('preview_resolution', '320p')

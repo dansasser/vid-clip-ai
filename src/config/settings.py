@@ -33,9 +33,9 @@ class Settings:
     GEMMA_MODEL: str = os.getenv('GEMMA_MODEL', 'gemma-7b')
     GEMMA_DEVICE: str = os.getenv('GEMMA_DEVICE', 'cuda')
 
-    # Ollama models (used with 'ollama run <model>' command)
-    QWEN2_VL_MODEL: str = os.getenv('QWEN2_VL_MODEL', 'qwen2-vl')
-    QWEN3_VL_MODEL: str = os.getenv('QWEN3_VL_MODEL', 'qwen3-vl')
+    # Ollama VLM models (used with 'ollama run <model>' command)
+    LOCAL_VLM_MODEL: str = os.getenv('LOCAL_VLM_MODEL', 'qwen2.5vl:3b')
+    CLOUD_VLM_MODEL: str = os.getenv('CLOUD_VLM_MODEL', 'qwen2-vl:235b-cloud')
 
     # Ollama options
     OLLAMA_TIMEOUT: int = int(os.getenv('OLLAMA_TIMEOUT', '300'))  # seconds
@@ -91,7 +91,7 @@ class Settings:
                 'device': cls.GEMMA_DEVICE
             },
             'vision_scoring': {
-                'qwen2_vl_model': cls.QWEN2_VL_MODEL,
+                'vlm_model': cls.LOCAL_VLM_MODEL,
                 'ollama_timeout': cls.OLLAMA_TIMEOUT,
                 'frames_per_segment': 5
             },
@@ -100,7 +100,7 @@ class Settings:
                 'threshold_high': cls.CONFIDENCE_THRESHOLD_HIGH
             },
             'quality_assurance': {
-                'qwen3_vl_model': cls.QWEN3_VL_MODEL,
+                'vlm_model': cls.CLOUD_VLM_MODEL,
                 'ollama_timeout': cls.OLLAMA_TIMEOUT,
                 'preview_duration': 2,
                 'preview_resolution': '320p'

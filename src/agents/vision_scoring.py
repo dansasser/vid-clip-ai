@@ -29,7 +29,7 @@ class VisionScoringAgent(BaseAgent):
 
     def __init__(self, config: Dict[str, Any] = None):
         super().__init__(config)
-        self.model_name = config.get('qwen2_vl_model', 'qwen2-vl')
+        self.model_name = config.get('vlm_model', 'qwen2.5vl:3b')
         self.ollama_timeout = config.get('ollama_timeout', 300)
         self.frames_per_segment = config.get('frames_per_segment', 5)
 
